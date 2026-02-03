@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hola mi niña :)</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #65216e, #6f3ab4);
+  color: white;
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 20px;
+  overflow:hidden;
+}
+.foto{
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 16px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+  animation: flotar 3.5s ease-in-out infinite;
+}
+
+@keyframes flotar{
+  0%,100% { transform: translateY(0px); }
+  50%     { transform: translateY(-8px); }
+}
+
+/* tarjeta */
+.card{
+  position: relative;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 28px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  animation: aparecer .6s ease;
+}
+
+@keyframes aparecer{
+  from { transform: translateY(15px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* brillo borde */
+.card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0));
+  z-index:-1;
+}
+
+h1{
+  margin: 0 0 10px;
+  font-size: 34px;
+}
+
+p{
+  margin: 0 0 18px;
+  line-height: 1.7;
+  opacity: 0.95;
+  text-align: justify;
+}
+
+/* botón premium */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  background: rgba(255,255,255,0.95);
+  color: #1e3c72;
+  padding: 12px 18px;
+  border-radius: 12px;
+  text-decoration:none;
+  font-weight: 700;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+  opacity: 0.98;
+}
+
+.mini{
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h1>Hola mi peque ❤️❤️</h1>
+
+<p>
+Primero que nada quiero decirte que te amo mucho y que eres lo más hermoso que tengo en mi vida.
+Gracias por estar conmigo en las buenas y en las malas, por apoyarme y por hacerme reír cuando más lo necesito.
+Eres mi compañera, mi amiga y mi amor, y no puedo imaginar mi vida sin ti.
+Espero que este pequeño detalle te haga sonreír tanto como tú me haces sonreír a mí.
+</p>
+
+<a class="btn" href="https://wa.me/5210000000000?text=Te%20amo%20mucho%20❤️" target="_blank">
+💖 te amo jeje
+</a>
+
+<div class="mini">
+Hecha con todo mi amor y un poquito de Chat ❤️
+</div>
+
+</div>
+
+<!-- corazones cayendo -->
+<script>
+const total = 18;
+
+for (let i = 0; i < total; i++) {
+  const heart = document.createElement("div");
+  heart.textContent = "❤️";
+  heart.style.position = "fixed";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.top = (-10 - Math.random() * 30) + "vh";
+  heart.style.fontSize = (14 + Math.random() * 22) + "px";
+  heart.style.opacity = 0.15 + Math.random() * 0.35;
+  heart.style.pointerEvents = "none";
+  document.body.appendChild(heart);
+
+  const dur = 6 + Math.random() * 6;
+  heart.animate(
+    [
+      { transform: "translateY(0) rotate(0deg)" },
+      { transform: `translateY(120vh) rotate(${Math.random()*360}deg)` }
+    ],
+    { duration: dur * 1000, iterations: Infinity, delay: Math.random() * 2000 }
+  );
+}
+</script>
+
+</body>
+</html>

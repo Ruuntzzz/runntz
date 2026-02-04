@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Register (Real)</title>
+  <style>
+    body{margin:0;font-family:Arial;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff}
+    .card{max-width:520px;width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(10px);border-radius:18px;padding:22px;box-shadow:0 15px 40px rgba(0,0,0,.25)}
+    h1{margin:0 0 12px;font-size:22px}
+    .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tab{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.10);cursor:pointer}
+    .tab.active{background:rgba(255,255,255,.92);color:#1e3c72;font-weight:700}
+    label{font-size:12px;opacity:.9}
+    input{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.18);color:#fff;outline:none;margin-top:6px}
+    .grid{display:grid;gap:12px}
+    .btn{width:100%;padding:12px 14px;border:none;border-radius:12px;background:rgba(255,255,255,.92);color:#1e3c72;font-weight:800;cursor:pointer}
+    .msg{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.18);display:none;font-size:13px}
+    .msg.show{display:block}
+    .hidden{display:none}
+    .session{display:none;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Acceso</h1>
+
+    <div class="tabs">
+      <div class="tab active" id="tLogin">Login</div>
+      <div class="tab" id="tReg">Register</div>
+    </div>
+
+    <form id="loginForm" class="grid">
+      <div>
+        <label>Email</label>
+        <input id="loginEmail" type="email" required placeholder="tu@email.com">
+      </div>
+      <div>
+        <label>Contraseña</label>
+        <input id="loginPass" type="password" required placeholder="••••••••">
+      </div>
+      <button class="btn" type="submit">Entrar</button>
+      <div class="msg" id="loginMsg"></div>
+    </form>
+
+    <form id="regForm" class="grid hidden">
+      <div>
+        <label>Email</label>
+        <input id="regEmail" type="email" required placeholder="tu@email.com">
+      </div>
+      <div>
+        <label>Contraseña</label>
+        <input id="regPass" type="password" required placeholder="mínimo 6 caracteres">
+      </div>
+      <button class="btn" type="submit">Crear cuenta</button>
+      <div class="msg" id="regMsg"></div>
+    </form>
+
+    <div class="session" id="sessionBox">
+      <h2>✅ Sesión iniciada</h2>
+      <p id="who"></p>
+      <button class="btn" id="logoutBtn" type="button">Cerrar sesión</button>
+      <div class="msg show" style="margin-top:12px;">
+        Ya puedes iniciar sesión desde cualquier compu o cel con este usuario.
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase (CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // ✅ PEGA AQUÍ TU firebaseConfig (Firebase te lo da)
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_PROYECTO.firebaseapp.com",
+      projectId: "TU_PROYECTO",
+      appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const $ = (id) => document.getElementById(id);
+    const tLogin = $("tLogin"), tReg = $("tReg");
+    const loginForm = $("loginForm"), regForm = $("regForm");
+    const loginMsg = $("loginMsg"), regMsg = $("regMsg");
+    const sessionBox = $("sessionBox"), who = $("who"), logoutBtn = $("logoutBtn");
+
+    function show(el, text){
+      el.textContent = text;
+      el.classList.add("show");
+    }
+    function hide(el){ el.classList.remove("show"); el.textContent=""; }
+
+    function setMode(mode){
+      hide(loginMsg); hide(regMsg);
+      if(mode === "login"){
+        tLogin.classList.add("active"); tReg.classList.remove("active");
+        loginForm.classList.remove("hidden"); regForm.classList.add("hidden");
+      }else{
+        tReg.classList.add("active"); tLogin.classList.remove("active");
+        regForm.classList.remove("hidden"); loginForm.classList.add("hidden");
+      }
+    }
+    tLogin.onclick = () => setMode("login");
+    tReg.onclick = () => setMode("register");
+
+    regForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hide(regMsg);
+      try{
+        const email = $("regEmail").value.trim();
+        const pass = $("regPass").value;
+        await createUserWithEmailAndPassword(auth, email, pass);
+        regForm.reset();
+      }catch(err){
+        show(regMsg, "Error: " + err.message);
+      }
+    });
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hide(loginMsg);
+      try{
+        const email = $("loginEmail").value.trim();
+        const pass = $("loginPass").value;
+        await signInWithEmailAndPassword(auth, email, pass);
+        loginForm.reset();
+      }catch(err){
+        show(loginMsg, "Error: " + err.message);
+      }
+    });
+
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if(user){
+        loginForm.classList.add("hidden");
+        regForm.classList.add("hidden");
+        tLogin.classList.remove("active");
+        tReg.classList.remove("active");
+        sessionBox.style.display = "block";
+        who.textContent = "👤 " + user.email;
+      }else{
+        sessionBox.style.display = "none";
+        setMode("login");
+      }
+    });
+  </script>
+</body>
+</html>

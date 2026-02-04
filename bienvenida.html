@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Carta ❤️</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Georgia', serif;
+  background:linear-gradient(135deg,#7e2d9e,#7b237e);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:20px;
+}
+
+.carta{
+  background:#7b7ab8;
+  max-width:700px;
+  padding:40px;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  line-height:1.7;
+  color:#222;
+  animation:aparecer 1s ease;
+}
+
+h1{
+  text-align:center;
+  margin-top:0;
+  font-size:32px;
+}
+
+p{
+  margin:14px 0;
+  text-align:justify;
+}
+
+.firma{
+  margin-top:30px;
+  text-align:right;
+  font-style:italic;
+}
+
+.logout{
+  margin-top:20px;
+  padding:10px 14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#f1e7e7;
+  color:rgb(186, 11, 230);
+}
+
+@keyframes aparecer{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="carta">
+
+<h1>Para ti mi pequena❤️</h1>
+
+<p>
+Desde que llegaste a mi vida, todo tiene más color, más sentido
+y más alegría. No hay un solo día en el que no agradezca tenerte
+a mi lado.
+</p>
+
+<p>
+Eres mi calma cuando todo se siente difícil,
+mi risa cuando el mundo pesa,
+y mi fuerza cuando siento que no puedo más.
+Contigo aprendí que amar no es solo sentir,
+sino elegir cada día quedarse.
+</p>
+
+<p>
+Gracias por cada abrazo,
+por cada palabra, por cada besito,
+por cada momento compartido.
+No cambiaría nada de lo que vivimos,
+porque cada paso me trajo hasta ti y estoy tan agradecido por ello.
+</p>
+
+<p>
+Quiero seguir escribiendo esta historia contigo,
+llenándola de recuerdos,
+de sueños cumplidos, de un futuro juntos, de una familia, y de un amor que nunca nunca se apague.
+se que juntos podemos con todo. te amo con todo mi corazon. Quiza no soy perfecto, pero mi amor por ti es real y sincero. te amo peke
+</p>
+
+<div class="firma">
+Con todo mi amor ❤️
+<br>
+<button class="logout" id="logout">Cerrar sesión</button>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBZqMRHbI0x9nBXvqWu425ApDUQTWPx0",
+  authDomain: "asd12-8f193.firebaseapp.com",
+  projectId: "asd12-8f193",
+  appId: "1:582423176591:web:14c432718cc118a7b257fa"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// proteger la página
+onAuthStateChanged(auth,user=>{
+  if(!user){
+    window.location.href = "./login.html";
+  }
+});
+
+// cerrar sesión
+document.getElementById("logout").onclick = async ()=>{
+  await signOut(auth);
+  window.location.href = "./login.html";
+};
+
+</script>
+
+</body>
+</html>

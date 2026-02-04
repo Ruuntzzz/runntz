@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login 💖</title>
+
+<style>
+  body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    color:#fff;
+  }
+
+  .card{
+    max-width:520px;
+    width:100%;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.2);
+    backdrop-filter:blur(10px);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+  }
+
+  h1{margin:0 0 12px;font-size:22px}
+
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+
+  .tab{
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.10);
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .tab.active{
+    background:rgba(255,255,255,.92);
+    color:#1e3c72;
+    font-weight:800;
+  }
+
+  label{font-size:12px;opacity:.9}
+  input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(0,0,0,.18);
+    color:#fff;
+    outline:none;
+    margin-top:6px;
+  }
+
+  .grid{display:grid;gap:12px}
+
+  .btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,.92);
+    color:#1e3c72;
+    font-weight:900;
+    cursor:pointer;
+  }
+
+  .msg{
+    margin-top:10px;
+    padding:10px;
+    border-radius:12px;
+    background:rgba(0,0,0,.18);
+    display:none;
+    font-size:13px;
+    line-height:1.35;
+  }
+  .msg.show{display:block}
+
+  .hidden{display:none}
+
+  .mini{
+    margin-top:10px;
+    font-size:12px;
+    opacity:.85;
+  }
+</style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Acceso 💖</h1>
+
+    <div class="tabs">
+      <div class="tab active" id="tabLogin">Login</div>
+      <div class="tab" id="tabReg">Register</div>
+    </div>
+
+    <!-- LOGIN -->
+    <form id="loginForm" class="grid">
+      <div>
+        <label>Email</label>
+        <input id="loginEmail" type="email" required />
+      </div>
+      <div>
+        <label>Contraseña</label>
+        <input id="loginPass" type="password" required />
+      </div>
+      <button class="btn" type="submit">Entrar</button>
+      <div class="msg" id="loginMsg"></div>
+      <div class="mini">Tip: si quieres otra cuenta, ve a “Register”.</div>
+    </form>
+
+    <!-- REGISTER -->
+    <form id="regForm" class="grid hidden">
+      <div>
+        <label>Email</label>
+        <input id="regEmail" type="email" required />
+      </div>
+      <div>
+        <label>Contraseña (mínimo 6)</label>
+        <input id="regPass" type="password" required minlength="6" />
+      </div>
+      <button class="btn" type="submit">Crear cuenta</button>
+      <div class="msg" id="regMsg"></div>
+      <div class="mini">Luego puedes iniciar sesión con esa cuenta.</div>
+    </form>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBoBZqMRHbI0x9nBXvqWu425ApDUQTWPx0",
+    authDomain: "asd12-8f193.firebaseapp.com",
+    projectId: "asd12-8f193",
+    appId: "1:582423176591:web:14c432718cc118a7b257fa"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const $ = (id) => document.getElementById(id);
+
+  const tabLogin = $("tabLogin");
+  const tabReg = $("tabReg");
+  const loginForm = $("loginForm");
+  const regForm = $("regForm");
+
+  const loginMsg = $("loginMsg");
+  const regMsg = $("regMsg");
+
+  function showMsg(el, text){
+    el.textContent = text;
+    el.classList.add("show");
+  }
+  function clearMsg(el){
+    el.textContent = "";
+    el.classList.remove("show");
+  }
+
+  function setMode(mode){
+    clearMsg(loginMsg); clearMsg(regMsg);
+    if(mode === "login"){
+      tabLogin.classList.add("active");
+      tabReg.classList.remove("active");
+      loginForm.classList.remove("hidden");
+      regForm.classList.add("hidden");
+    }else{
+      tabReg.classList.add("active");
+      tabLogin.classList.remove("active");
+      regForm.classList.remove("hidden");
+      loginForm.classList.add("hidden");
+    }
+  }
+
+  tabLogin.onclick = () => setMode("login");
+  tabReg.onclick = () => setMode("register");
+
+  // Register
+  regForm.onsubmit = async (e) => {
+    e.preventDefault();
+    clearMsg(regMsg);
+    try{
+      const email = $("regEmail").value.trim();
+      const pass = $("regPass").value;
+      await createUserWithEmailAndPassword(auth, email, pass);
+      showMsg(regMsg, "Cuenta creada ✅ Ahora te mandé a la carta.");
+      // ya inició sesión automáticamente
+      window.location.href = "./bienvenida.html";
+    }catch(err){
+      showMsg(regMsg, "Error: " + err.message);
+    }
+  };
+
+  // Login
+  loginForm.onsubmit = async (e) => {
+    e.preventDefault();
+    clearMsg(loginMsg);
+    try{
+      const email = $("loginEmail").value.trim();
+      const pass = $("loginPass").value;
+      await signInWithEmailAndPassword(auth, email, pass);
+      window.location.href = "./bienvenida.html";
+    }catch(err){
+      showMsg(loginMsg, "Error: " + err.message);
+    }
+  };
+
+  // Si ya hay sesión activa → manda directo a la carta
+  onAuthStateChanged(auth, (user) => {
+    if(user){
+      window.location.href = "./bienvenida.html";
+    }
+  });
+</script>
+
+</body>
+</html>

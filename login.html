@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login real</title>
+
+<style>
+body{margin:0;font-family:Arial;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff}
+.card{max-width:520px;width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(10px);border-radius:18px;padding:22px;box-shadow:0 15px 40px rgba(0,0,0,.25)}
+h1{margin:0 0 12px;font-size:22px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.10);cursor:pointer}
+.tab.active{background:rgba(255,255,255,.92);color:#1e3c72;font-weight:700}
+label{font-size:12px;opacity:.9}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.18);color:#fff;outline:none;margin-top:6px}
+.grid{display:grid;gap:12px}
+.btn{width:100%;padding:12px;border:none;border-radius:12px;background:rgba(255,255,255,.92);color:#1e3c72;font-weight:800;cursor:pointer}
+.msg{margin-top:10px;padding:10px;border-radius:12px;background:rgba(0,0,0,.18);display:none;font-size:13px}
+.msg.show{display:block}
+.hidden{display:none}
+.session{display:none;text-align:center}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h1>Acceso</h1>
+
+<div class="tabs">
+<div class="tab active" id="tLogin">Login</div>
+<div class="tab" id="tReg">Register</div>
+</div>
+
+<form id="loginForm" class="grid">
+<div><label>Email</label><input id="loginEmail" type="email" required></div>
+<div><label>Contraseña</label><input id="loginPass" type="password" required></div>
+<button class="btn">Entrar</button>
+<div class="msg" id="loginMsg"></div>
+</form>
+
+<form id="regForm" class="grid hidden">
+<div><label>Email</label><input id="regEmail" type="email" required></div>
+<div><label>Contraseña</label><input id="regPass" type="password" required></div>
+<button class="btn">Crear cuenta</button>
+<div class="msg" id="regMsg"></div>
+</form>
+
+<div class="session" id="sessionBox">
+<h2>✅ Sesión iniciada</h2>
+<p id="who"></p>
+<button class="btn" id="logoutBtn">Cerrar sesión</button>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBZqMRHbI0x9nBXvqWu425ApDUQTWPx0",
+  authDomain: "asd12-8f193.firebaseapp.com",
+  projectId: "asd12-8f193",
+  storageBucket: "asd12-8f193.firebasestorage.app",
+  messagingSenderId: "582423176591",
+  appId: "1:582423176591:web:14c432718cc118a7b257fa",
+  measurementId: "G-B7LH7MM2BQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const $ = id => document.getElementById(id);
+const loginForm = $("loginForm");
+const regForm = $("regForm");
+const loginMsg = $("loginMsg");
+const regMsg = $("regMsg");
+const sessionBox = $("sessionBox");
+const who = $("who");
+
+$("tLogin").onclick = () => { loginForm.classList.remove("hidden"); regForm.classList.add("hidden"); };
+$("tReg").onclick = () => { regForm.classList.remove("hidden"); loginForm.classList.add("hidden"); };
+
+regForm.onsubmit = async e => {
+e.preventDefault();
+try{
+await createUserWithEmailAndPassword(auth,$("regEmail").value,$("regPass").value);
+regMsg.textContent="Cuenta creada ✅";
+regMsg.classList.add("show");
+}catch(err){regMsg.textContent=err.message;regMsg.classList.add("show");}
+};
+
+loginForm.onsubmit = async e => {
+e.preventDefault();
+try{
+await signInWithEmailAndPassword(auth,$("loginEmail").value,$("loginPass").value);
+}catch(err){loginMsg.textContent=err.message;loginMsg.classList.add("show");}
+};
+
+$("logoutBtn").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth,user=>{
+if(user){
+loginForm.classList.add("hidden");
+regForm.classList.add("hidden");
+sessionBox.style.display="block";
+who.textContent="👤 "+user.email;
+}else{
+sessionBox.style.display="none";
+loginForm.classList.remove("hidden");
+}
+});
+</script>
+
+</body>
+</html>
